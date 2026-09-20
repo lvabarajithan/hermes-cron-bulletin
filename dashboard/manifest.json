@@ -1,0 +1,8 @@
+{
+  "name": "cron-bulletin",
+  "label": "Cron Bulletin",
+  "description": "Central inbox for persisted cron reports and their artifacts.",
+  "icon": "Inbox",
+  "version": "0.1.0",
+  "api": "plugin_api.py"
+}
