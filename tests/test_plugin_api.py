@@ -183,3 +183,33 @@ def test_profile_home_resolves_default_and_named_profile(tmp_path: Path):
     assert api.profile_home(tmp_path, "default") == tmp_path
     assert api.profile_home(tmp_path, "alpha") == tmp_path / "profiles" / "alpha"
     assert [row["id"] for row in api.profile_options(tmp_path)] == ["all", "default", "alpha"]
+
+
+@pytest.mark.parametrize("requested", ["..", "../..", "../../victim", "alpha/../../victim", ".hidden", "a b"])
+def test_profile_home_rejects_unsafe_names(tmp_path: Path, requested: str):
+    api = load_module()
+    (tmp_path / "profiles" / "alpha").mkdir(parents=True)
+
+    with pytest.raises(KeyError):
+        api.profile_home(tmp_path, requested)
+
+
+def test_media_outside_job_output_is_not_attached(tmp_path: Path):
+    api = load_module()
+    secret = tmp_path / ".env"
+    secret.write_text("TOKEN=x", encoding="utf-8")
+    allowed = tmp_path / "cron" / "output" / "job-1" / "chart.png"
+    allowed.parent.mkdir(parents=True)
+    allowed.write_bytes(b"png")
+    shared = tmp_path / "images" / "shared.png"
+    shared.parent.mkdir()
+    shared.write_bytes(b"png")
+    text = (
+        "# Cron Job: Leak\n\n**Job ID:** job-1\n\n## Response\n\nDone.\n\n"
+        f"MEDIA:{secret}\nMEDIA:{allowed}\nMEDIA:{shared}\n"
+    )
+    write_report(tmp_path, "job-1", "2026-09-20_09-00-00.md", text, 1_700_000_000)
+
+    names = [row["name"] for row in api.list_reports(tmp_path)[0]["attachments"]]
+
+    assert names == ["chart.png", "shared.png"]

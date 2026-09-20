@@ -4,7 +4,6 @@ import hashlib
 import json
 import mimetypes
 import re
-import tempfile
 import threading
 from pathlib import Path
 from typing import Iterable
@@ -17,6 +16,8 @@ from hermes_constants import get_hermes_home
 router = APIRouter()
 
 _MEDIA_RE = re.compile(r"(?m)^MEDIA:\s*(\S+)\s*$")
+# Profile names come from the query string; keep them to plain directory names.
+_PROFILE_NAME_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
 _TITLE_RE = re.compile(r"^# Cron Job:\s*(.+?)\s*$", re.MULTILINE)
 _FIELD_RE = re.compile(r"^\*\*(?P<key>[^*]+):\*\*\s*(?P<value>.*)$", re.MULTILINE)
 _RESPONSE_RE = re.compile(r"(?m)^## Response\s*$")
@@ -132,7 +133,9 @@ def _job_workdirs(home: Path) -> dict[str, Path]:
 
 
 def _allowed_roots(home: Path, job_id: str, workdirs: dict[str, Path]) -> list[Path]:
-    roots = [home, Path(tempfile.gettempdir())]
+    # Only the job's own output dir, the shared images dir and the job workdir:
+    # a MEDIA: line is model-written, so the whole home (`.env`, keys) must stay out.
+    roots = [home / "cron" / "output" / job_id, home / "images"]
     if job_id in workdirs:
         roots.append(workdirs[job_id])
     return roots
@@ -194,6 +197,8 @@ def profile_home(active_home: Path | str, profile: str) -> Path:
         return home
     if requested == "default":
         return root
+    if _PROFILE_NAME_RE.fullmatch(requested) is None:
+        raise KeyError(requested)
     candidate = root / "profiles" / requested
     if candidate.is_dir():
         return candidate
