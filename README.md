@@ -33,7 +33,6 @@ Open **Cron Bulletin** from the sidebar or command palette. The page provides:
 
 ## Files
 
-- `PLAN.md` — locked architecture and acceptance criteria
 - `dashboard/plugin_api.py` — scoped report and attachment REST API
 - `desktop/plugin.js` — native Desktop page
 - `tests/` — Python and JavaScript behavior tests
