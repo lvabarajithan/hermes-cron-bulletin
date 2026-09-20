@@ -37,11 +37,12 @@ test('filterReports filters by status and case-insensitive report text', () => {
   assert.deepEqual(filterReports(reports, 'morning', 'completed').map(row => row.id), ['1'])
 })
 
-test('filterReports hides configured jobs but can reveal them', () => {
+test('filterReports hides configured jobs but surfaces their failures', () => {
   const { filterReports } = loadPluginInternals()
   const rows = reports.map(row => ({ ...row, profile: 'active' }))
 
-  assert.deepEqual(filterReports(rows, '', 'all', ['active:deploy']).map(row => row.id), ['1'])
+  assert.deepEqual(filterReports(rows, '', 'all', ['active:weather']).map(row => row.id), ['2'])
+  assert.deepEqual(filterReports(rows, '', 'all', ['active:deploy']).map(row => row.id), ['1', '2'])
   assert.deepEqual(filterReports(rows, '', 'all', ['active:deploy'], true).map(row => row.id), ['1', '2'])
 })
 

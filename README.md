@@ -29,6 +29,7 @@ Open **Cron Bulletin** from the sidebar or command palette. The page provides:
 - Native Markdown and media rendering
 - Attachment metadata
 - Persistent read/unread state
+- Hidden jobs automatically resurface when a run fails
 - Manual refresh plus 15-second polling
 
 ## Files

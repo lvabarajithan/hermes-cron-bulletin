@@ -73,7 +73,9 @@ function filterReports(reports, query, status, hiddenJobs = [], showHidden = fal
   const needle = String(query || '').trim().toLocaleLowerCase()
   const hidden = new Set(Array.isArray(hiddenJobs) ? hiddenJobs : [])
   return (reports || []).filter(report => {
-    if (!showHidden && hidden.has(jobKey(report))) return false
+    // Hidden jobs stay quiet on successful runs, but failures must surface so
+    // a user cannot miss an operational problem in a muted job.
+    if (!showHidden && hidden.has(jobKey(report)) && report.status !== 'failed') return false
     if (status !== 'all' && report.status !== status) return false
     if (!needle) return true
     return [report.job_name, report.job_id, report.markdown]
