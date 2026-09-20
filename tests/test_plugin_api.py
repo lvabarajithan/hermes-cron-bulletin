@@ -213,3 +213,20 @@ def test_media_outside_job_output_is_not_attached(tmp_path: Path):
     names = [row["name"] for row in api.list_reports(tmp_path)[0]["attachments"]]
 
     assert names == ["chart.png", "shared.png"]
+
+
+def test_media_in_plugin_artifact_dir_is_attached(tmp_path: Path):
+    """Artifacts written to the plugin's own bulletin-assets dir stay attached."""
+    api = load_module()
+    artifact = tmp_path / "cron" / "bulletin-assets" / "smoke-test-retry" / "report.html"
+    artifact.parent.mkdir(parents=True)
+    artifact.write_text("<html></html>", encoding="utf-8")
+    text = (
+        "# Cron Job: Artifacts\n\n**Job ID:** job-1\n\n## Response\n\nDone.\n\n"
+        f"MEDIA:{artifact}\n"
+    )
+    write_report(tmp_path, "job-1", "2026-09-20_09-00-00.md", text, 1_700_000_000)
+
+    names = [row["name"] for row in api.list_reports(tmp_path)[0]["attachments"]]
+
+    assert names == ["report.html"]

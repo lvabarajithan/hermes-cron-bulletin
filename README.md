@@ -17,7 +17,7 @@ deliver: local
 
 Hermes already persists each run to `$HERMES_HOME/cron/output/<job-id>/*.md`. The plugin indexes those files, so no Telegram, Discord, Slack, or other messaging delivery is needed.
 
-Reports may contain plain text, Markdown, and `MEDIA:/absolute/path` directives. Referenced files are accepted only when they resolve to a regular file under the active profile, the job workdir, or the OS temporary directory. Paths returned by the list API are opaque; raw server paths are not exposed.
+Reports may contain plain text, Markdown, and `MEDIA:/absolute/path` directives. Referenced files are accepted only when they resolve to a regular file under the job's own `$HERMES_HOME/cron/output/<job-id>/` directory, the plugin's `$HERMES_HOME/cron/bulletin-assets/` directory, `$HERMES_HOME/images/`, or the job workdir — the rest of the profile home (`.env`, credentials) is never readable through the asset route. Write generated artifacts to the job output directory, the plugin's `bulletin-assets/` directory, or the job workdir. Paths returned by the list API are opaque; raw server paths are not exposed.
 
 ## Desktop
 

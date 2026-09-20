@@ -1,4 +1,4 @@
 name: cron-bulletin
-version: 0.1.1
+version: 0.1.2
 description: "Central Hermes Desktop inbox for Markdown, media, and file reports produced by local cron runs."
 author: "Abarajithan"

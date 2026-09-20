@@ -133,9 +133,10 @@ def _job_workdirs(home: Path) -> dict[str, Path]:
 
 
 def _allowed_roots(home: Path, job_id: str, workdirs: dict[str, Path]) -> list[Path]:
-    # Only the job's own output dir, the shared images dir and the job workdir:
-    # a MEDIA: line is model-written, so the whole home (`.env`, keys) must stay out.
-    roots = [home / "cron" / "output" / job_id, home / "images"]
+    # Only the job's own output dir, the plugin's own artifact dir, the shared
+    # images dir and the job workdir: a MEDIA: line is model-written, so the
+    # whole home (`.env`, keys) must stay out.
+    roots = [home / "cron" / "output" / job_id, home / "cron" / "bulletin-assets", home / "images"]
     if job_id in workdirs:
         roots.append(workdirs[job_id])
     return roots
