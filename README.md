@@ -2,6 +2,11 @@
 
 A unified Hermes plugin that adds a central Cron Bulletin page to Hermes Desktop without changing Hermes core.
 
+![Cron Bulletin in Hermes Desktop](docs/cron-bulletin.png)
+
+The inbox groups reports by job and profile, defaults to **All profiles**, and keeps
+the latest run visible while older runs remain available in expandable history.
+
 ## How reports arrive
 
 Cron jobs remain ordinary Hermes cron jobs. Configure them with local delivery:
